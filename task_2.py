@@ -1,60 +1,74 @@
+import logging
 from abc import ABC, abstractmethod
 
-# Клас для зберігання інформації про книгу
+logging.basicConfig(level=logging.INFO)
+
+
+# Клас для книги
 class Book:
-    def __init__(self, title, author, year):
+    def __init__(self, title: str, author: str, year: str):
         self.title = title
         self.author = author
         self.year = year
 
-    def __str__(self):
-        return f'Title: {self.title}, Author: {self.author}, Year: {self.year}'
 
-# Інтерфейс бібліотеки
+# Абстрактний інтерфейс для бібліотеки
 class LibraryInterface(ABC):
     @abstractmethod
-    def add_book(self, book):
+    def add_book(self, book: Book):
         pass
 
     @abstractmethod
-    def remove_book(self, title):
+    def remove_book(self, title: str):
         pass
 
     @abstractmethod
     def show_books(self):
         pass
 
-# Реалізація бібліотеки
+
+# Клас бібліотеки
 class Library(LibraryInterface):
     def __init__(self):
         self.books = []
 
-    def add_book(self, book):
+    def add_book(self, book: Book):
         self.books.append(book)
+        logging.info(f"Книга {book.title} додана до бібліотеки")
 
-    def remove_book(self, title):
-        self.books = [book for book in self.books if book.title != title]
+    def remove_book(self, title: str):
+        for book in self.books:
+            if book.title == title:
+                self.books.remove(book)
+                logging.info(f"Книга {title} видалена з бібліотеки")
+                break
 
     def show_books(self):
-        for book in self.books:
-            print(book)
+        if self.books:
+            logging.info("Список книг у бібліотеці:")
+            for book in self.books:
+                logging.info(
+                    f"Title: {book.title}, Author: {book.author}, Year: {book.year}"
+                )
+        else:
+            logging.info("Бібліотека порожня")
 
-# Менеджер бібліотеки для інверсії залежностей
+
+# Клас для керування бібліотекою
 class LibraryManager:
     def __init__(self, library: LibraryInterface):
         self.library = library
 
-    def add_book(self, title, author, year):
+    def add_book(self, title: str, author: str, year: str):
         book = Book(title, author, year)
         self.library.add_book(book)
 
-    def remove_book(self, title):
+    def remove_book(self, title: str):
         self.library.remove_book(title)
 
     def show_books(self):
         self.library.show_books()
 
-# Основна функція
 
 def main():
     library = Library()
@@ -77,7 +91,8 @@ def main():
             case "exit":
                 break
             case _:
-                print("Invalid command. Please try again.")
+                logging.info("Invalid command. Please try again.")
+
 
 if __name__ == "__main__":
     main()

@@ -1,57 +1,79 @@
+import logging
 from abc import ABC, abstractmethod
 
-# Абстрактний клас транспортного засобу
+# Налаштування логування
+logging.basicConfig(level=logging.INFO)
+
+
+# Абстрактний базовий клас для транспортних засобів
 class Vehicle(ABC):
-    def __init__(self, make, model, region):
+    def __init__(self, make: str, model: str):
         self.make = make
         self.model = model
-        self.region = region
-    
+
     @abstractmethod
     def start_engine(self):
         pass
 
-# Класи Car і Motorcycle успадковуються від Vehicle
+
+# Клас Car
 class Car(Vehicle):
     def start_engine(self):
-        print(f"{self.make} {self.model} ({self.region} Spec): Двигун запущено")
+        logging.info(f"{self.make} {self.model}: Двигун запущено")
 
+
+# Клас Motorcycle
 class Motorcycle(Vehicle):
     def start_engine(self):
-        print(f"{self.make} {self.model} ({self.region} Spec): Мотор заведено")
+        logging.info(f"{self.make} {self.model}: Мотор заведено")
 
-# Абстрактна фабрика транспортних засобів
+
+# Абстрактна фабрика для створення транспортних засобів
 class VehicleFactory(ABC):
     @abstractmethod
-    def create_car(self, make, model):
+    def create_car(self) -> Car:
         pass
 
     @abstractmethod
-    def create_motorcycle(self, make, model):
+    def create_motorcycle(self) -> Motorcycle:
         pass
+
 
 # Фабрика для США
 class USVehicleFactory(VehicleFactory):
-    def create_car(self, make, model):
-        return Car(make, model, "US")
-    
-    def create_motorcycle(self, make, model):
-        return Motorcycle(make, model, "US")
+    def create_car(self) -> Car:
+        return Car("Ford", "Mustang (US Spec)")
+
+    def create_motorcycle(self) -> Motorcycle:
+        return Motorcycle("Harley-Davidson", "Sportster (US Spec)")
+
 
 # Фабрика для ЄС
 class EUVehicleFactory(VehicleFactory):
-    def create_car(self, make, model):
-        return Car(make, model, "EU")
-    
-    def create_motorcycle(self, make, model):
-        return Motorcycle(make, model, "EU")
+    def create_car(self) -> Car:
+        return Car("Volkswagen", "Golf (EU Spec)")
 
-# Використання фабрики
-us_factory = USVehicleFactory()
-eu_factory = EUVehicleFactory()
+    def create_motorcycle(self) -> Motorcycle:
+        return Motorcycle("BMW", "R1200 (EU Spec)")
 
-vehicle1 = us_factory.create_car("Ford", "Mustang")
-vehicle1.start_engine()
 
-vehicle2 = eu_factory.create_motorcycle("BMW", "R1250GS")
-vehicle2.start_engine()
+# Використання фабрик
+def main():
+    us_factory = USVehicleFactory()
+    eu_factory = EUVehicleFactory()
+
+    # Створення транспортних засобів для США
+    us_car = us_factory.create_car()
+    us_motorcycle = us_factory.create_motorcycle()
+    us_car.start_engine()
+    us_motorcycle.start_engine()
+
+    # Створення транспортних засобів для ЄС
+    eu_car = eu_factory.create_car()
+    eu_motorcycle = eu_factory.create_motorcycle()
+    eu_car.start_engine()
+    eu_motorcycle.start_engine()
+
+
+if __name__ == "__main__":
+    main()
